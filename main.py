@@ -1,5 +1,6 @@
 import requests
 from openpyxl import load_workbook
+import editpyxl
 import json
 import os
 from time import time
@@ -64,35 +65,35 @@ class TelegramBot:
             self.send_message(text,chat_id)
 
         elif message_counter == 1:
-            text = 'Digite o valor1:'
+            text = 'Qual o distribuidor?'
             self.send_message(text,chat_id)
 
         elif message_counter == 2:
-            self.scan_message(chat_id,user_text,'valor1')
-            text = 'Digite o valor2:'
+            self.scan_message(chat_id,user_text,'Distribuidor')
+            text = 'Qual semana?'
             self.send_message(text,chat_id)
 
         elif message_counter == 3:
-            self.scan_message(chat_id,user_text,'valor2')
-            text = 'Digite o valor3:'
+            self.scan_message(chat_id,user_text,'Semana')
+            text = 'Qual a geração?'
             self.send_message(text,chat_id)
 
         elif message_counter == 4:
-            self.scan_message(chat_id,user_text,'valor3')
-            text = 'Digite o valor4:'
+            self.scan_message(chat_id,user_text,'Geração')
+            text = 'Qual a meta?:'
             self.send_message(text,chat_id)
         
         elif message_counter == 5:
-            self.scan_message(chat_id,user_text,'valor4')
-            text = 'Digite o valor5:'
+            self.scan_message(chat_id,user_text,'Meta')
+            text = 'Qual a positivação?'
             self.send_message(text,chat_id)
         
         elif message_counter == 6:
-            self.scan_message(chat_id,user_text,'valor5')
+            self.scan_message(chat_id,user_text,'Positivação')
             self.excel_handler(chat_id)
             text = 'Aqui está seu arquivo'
             self.send_message(text,chat_id)
-            self.send_file(chat_id,'Table.xlsx')
+            self.send_file(chat_id,'VELOCIMETRO_EM_BRANCO_V2.xlsx')
             self.remove_user(chat_id)
     
     def scan_message(self,chat_id,user_text,name):
@@ -124,16 +125,18 @@ class TelegramBot:
     def excel_handler(self,chat_id):
         for i,user_state in enumerate(self.user_states):
             if chat_id == self.user_states[i]['chatId']:
-                wb = load_workbook('Table.xlsx')
-                ws=wb['Sheet1']
+                wb = editpyxl.Workbook()  
+                wb.open('VELOCIMETRO_EM_BRANCO_V2.xlsx')
+                ws=wb['RESUMO']
 
-                ws.cell(row=2,column=1).value= self.user_states[i]['valor1']
-                ws.cell(row=2,column=2).value= self.user_states[i]['valor2']
-                ws.cell(row=2,column=3).value= self.user_states[i]['valor3']
-                ws.cell(row=2,column=4).value= self.user_states[i]['valor4']
-                ws.cell(row=2,column=5).value= self.user_states[i]['valor5']
+                ws.cell('B2').value= self.user_states[i]['Distribuidor']
+                ws.cell('D2').value= self.user_states[i]['Semana']
+                ws.cell('U2').value= self.user_states[i]['Geração']
+                ws.cell('F2').value= int(self.user_states[i]['Meta'])
+                ws.cell('F2').value= int(self.user_states[i]['Positivação'])
 
-                wb.save(r'Table.xlsx')
+                wb.save(r'VELOCIMETRO_EM_BRANCO_V2.xlsx')
+                wb.close()
 
     #add user or increase counter if user already exists
     def add_user(self,chat_id):
@@ -141,11 +144,11 @@ class TelegramBot:
         user_information = {
             'chatId': chat_id,
             'messageCounter': 0,
-            'valor1': 0,
-            'valor2': 0,
-            'valor3': 0,
-            'valor4': 0,
-            'valor5': 0
+            'Distribuidor': '',
+            'Semana': '',
+            'Geração': '',
+            'Meta': 0,
+            'Positivação': 0,
         }
 
         #Add new user or increase counter
