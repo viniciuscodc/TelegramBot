@@ -19,7 +19,6 @@ class TelegramBot:
         self.update_id = None
 
     def start(self):
-        self.update_id = None
 
         while True:
             messages = self.get_response(self.update_id)
@@ -32,8 +31,7 @@ class TelegramBot:
       
                     self.add_user(chat_id)
                     self.manage_message(chat_id,user_text)
-        
- 
+         
     def get_response(self,update_id):
         request_link = f'{self.url}getUpdates?timeout=5'
         if update_id:
@@ -91,7 +89,7 @@ class TelegramBot:
         elif message_counter == 6:
             self.scan_message(chat_id,user_text,'Positivação')
             self.excel_handler(chat_id)
-            text = 'Aqui está seu arquivo'
+            text = 'Aqui está seu documento'
             self.send_message(text,chat_id)
             self.send_file(chat_id,'VELOCIMETRO_EM_BRANCO_V2.xlsx')
             self.remove_user(chat_id)
@@ -130,10 +128,29 @@ class TelegramBot:
                 ws=wb['RESUMO']
 
                 ws.cell('B2').value= self.user_states[i]['Distribuidor']
-                ws.cell('D2').value= self.user_states[i]['Semana']
+
+                try:
+                    ws.cell('D2').value= int(self.user_states[i]['Semana'])
+                except:
+                    print('Input is not number')
+                else:
+                    ws.cell('D2').value= self.user_states[i]['Semana']
+
                 ws.cell('U2').value= self.user_states[i]['Geração']
-                ws.cell('F2').value= int(self.user_states[i]['Meta'])
-                ws.cell('F2').value= int(self.user_states[i]['Positivação'])
+
+                try:
+                    ws.cell('F2').value= int(self.user_states[i]['Meta'])
+                except:
+                    print('Input is not number')
+                else:
+                    ws.cell('F2').value= self.user_states[i]['Meta']
+
+                try:    
+                    ws.cell('K2').value= int(self.user_states[i]['Positivação'])
+                except:
+                    print('Input is not number')
+                else:
+                    ws.cell('K2').value= self.user_states[i]['Positivação']
 
                 wb.save(r'VELOCIMETRO_EM_BRANCO_V2.xlsx')
                 wb.close()
