@@ -12,7 +12,7 @@ from telegram.bot import Bot
 
 class TelegramBot:
     def __init__(self):
-        self.token = '1972105700:AAHZrt6DB8epybBTGdxB-S9E-xUl1s5li4M'
+        self.token = ''
         self.url = f'https://api.telegram.org/bot{self.token}/'
         self.user_states = []
         self.time = time()
